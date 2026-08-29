@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recallr AI: The #1 Memory Layer for Conversational AI Agents</title>
+<meta name="description" content="The #1 memory layer for conversational AI agents. Persistent memory, temporal reasoning, and conflict resolution. 97.5% on LongMemEval.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --white:       #ffffff;
+    --ice-blue:    #d4e6fa;
+    --soft-sky:    #abcff4;
+    --core-azure:  #83b4ec;
+    --black:       #0d0e11;
+    --charcoal:    #1c1e23;
+
+    --paper:       #fbfcfd;
+    --line:        #e6eaf0;
+    --line-soft:   #eef1f5;
+    --line-strong: #d4dae3;
+    --ink:         #0d0e11;
+    --ink-2:       #2a2d33;
+    --ink-3:       #555a64;
+    --ink-4:       #8c919b;
+    --ink-5:       #b6bbc4;
+
+    --dark-bg:     #1c1e23;
+    --dark-elev:   #24262c;
+    --dark-line:   #2e3138;
+    --dark-line-s: #383b43;
+    --dark-text:   #f5f7fa;
+    --dark-muted:  #a7adb8;
+    --dark-dim:    #6f757f;
+
+    --font: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --container:   1240px;
+    --section-pad: 128px;
+  }
+
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--white);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection { background: var(--core-azure); color: var(--white); }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  ul { list-style: none; }
+
+  .container { max-width: var(--container); margin: 0 auto; padding: 0 32px; width: 100%; }
+  section { padding: var(--section-pad) 0; position: relative; }
+  .section-divider { border-top: 1px solid var(--line); }
+
+  /* ============ TYPOGRAPHY ============ */
+  h1, h2, h3, h4 { color: var(--ink); font-weight: 500; letter-spacing: -0.025em; line-height: 1.05; }
+  h1 { font-size: 88px; font-weight: 500; letter-spacing: -0.035em; line-height: 0.96; }
+  h2 { font-size: 56px; font-weight: 500; letter-spacing: -0.028em; line-height: 1.02; }
+  h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.012em; line-height: 1.25; }
+  p { color: var(--ink-3); font-size: 16px; line-height: 1.6; }
+  .lead { font-size: 19px; color: var(--ink-3); max-width: 660px; line-height: 1.5; font-weight: 400; }
+
+  /* ============ EYEBROW ============ */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--core-azure); }
+  .mono { font-family: var(--mono); font-weight: 300; }
+
+  /* ============ BUTTONS ============ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px; height: 44px; padding: 0 22px;
+    border-radius: 0;
+    font-size: 14px; font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    font-family: var(--font);
+  }
+  .btn-primary { background: var(--ink); color: var(--white); }
+  .btn-primary:hover { background: var(--ink-2); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+  .btn-ghost:hover { border-color: var(--ink); }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+  .btn .arrow { font-size: 14px; line-height: 1; }
+  .btn .icon { transition: transform 0.15s ease; }
+  .btn:hover .icon { transform: translateX(2px); }
+  .dark .btn-primary { background: var(--white); color: var(--ink); }
+  .dark .btn-primary:hover { background: var(--ice-blue); }
+  .dark .btn-ghost { color: var(--dark-text); border-color: var(--dark-line-s); }
+  .dark .btn-ghost:hover { border-color: var(--dark-text); }
+
+  /* ============ LOGO ============ */
+  .logo {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 18px; font-weight: 500; letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .logo svg { width: 22px; height: 22px; }
+  .dark .logo, footer.dark .logo { color: var(--white); }
+
+  /* ============ NAV ============ */
+  nav.site-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: var(--container); margin: 0 auto; padding: 0 32px;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .nav-links { display: flex; gap: 2px; }
+  .nav-links a {
+    display: inline-block; padding: 8px 12px;
+    font-size: 13.5px; font-weight: 400;
+    color: var(--ink-3); transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta { display: flex; align-items: center; gap: 6px; }
+  .nav-toggle { display: none; }
+
+  /* ============ HERO — Figma auto-layout ready ============
+     Frame hierarchy:
+     #hero (Section, vertical auto-layout, padding 96px 0 96px)
+       └─ .hero-frame (Frame, vertical auto-layout, gap 0, fill container)
+            ├─ .hero-content (Frame, vertical auto-layout, gap 32, align left)
+            │     ├─ .eyebrow
+            │     ├─ h1
+            │     ├─ p.lead
+            │     ├─ .hero-stats-big (Frame, horizontal auto-layout, gap 0)
+            │     │     ├─ .hero-stat-big × 3 (vertical auto-layout, gap 10)
+            │     └─ .hero-actions (Frame, horizontal auto-layout, gap 10)
+            └─ .scroll-cue (Frame, horizontal auto-layout, gap 8)
+  =====================================================*/
+  #hero {
+    padding-top: 96px;
+    padding-bottom: 96px;
+    text-align: left;
+    overflow: hidden;
+    position: relative;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, var(--ice-blue) 0%, transparent 60%),
+      var(--white);
+  }
+  #hero .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 80px;
+  }
+
+  .hero-frame {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 48px;
+    width: 100%;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+    max-width: 880px;
+  }
+
+  #hero .eyebrow { margin: 0; }
+  #hero h1 {
+    margin: 0;
+    max-width: 880px;
+    text-align: left;
+  }
+  #hero h1 .dim { color: var(--ink-4); font-weight: 400; }
+  #hero .lead {
+    margin: 0;
+    max-width: 640px;
+    text-align: left;
+  }
+
+  /* Hero stats — horizontal auto-layout */
+  .hero-stats-big {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    max-width: 720px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-stat-big {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10px;
+    flex: 1 1 0;
+    padding: 24px 28px;
+    text-align: left;
+    border-right: 1px solid var(--line);
+  }
+  .hero-stat-big:last-child { border-right: none; }
+  .hero-stat-big .v {
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 40px;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-feature-settings: 'tnum' 1;
+  }
+  .hero-stat-big .l {
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 11px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    line-height: 1.4;
+  }
+
+  /* Hero actions — horizontal auto-layout, left-aligned */
+  .hero-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0;
+  }
+
+  /* Scroll cue — horizontal auto-layout */
+  .scroll-cue {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin: 0;
+    align-self: flex-start;
+  }
+  .scroll-cue .icon { color: var(--ink-4); }
+
+  /* ============ PLACEHOLDERS ============ */
+  .ph {
+    border: 1px dashed var(--line-strong);
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgba(13, 14, 17, 0.018) 14px 28px),
+      var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px;
+    color: var(--ink-4); width: 100%;
+  }
+  .ph-label {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--ink-3); text-align: center;
+  }
+  .ph-dim {
+    font-family: var(--mono); font-weight: 300; font-size: 11px;
+    color: var(--ink-4);
+  }
+  .ph-chart { aspect-ratio: 1160 / 520; max-width: 1160px; margin: 0 auto; }
+  .ph-latency { aspect-ratio: 1160 / 360; max-width: 1160px; margin: 0 auto 56px; }
+  .ph-arch { aspect-ratio: 1160 / 460; max-width: 1160px; margin: 0 auto; }
+  .ph-case { aspect-ratio: 16 / 10; width: 100%; }
+  .ph-feat { aspect-ratio: 1160 / 440; max-width: 1160px; margin: 0 auto; }
+  .ph-calc { aspect-ratio: 1160 / 540; max-width: 1160px; margin: 0 auto; }
+
+  .ph-icon {
+    width: 40px; height: 40px;
+    border: 1px dashed var(--line-strong);
+    background: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+  }
+  .ph-icon span {
+    font-family: var(--mono); font-size: 9px; font-weight: 300;
+    color: var(--ink-4); letter-spacing: 0.1em;
+  }
+
+  .dark .ph {
+    border-color: var(--dark-line-s);
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgba(255,255,255,0.02) 14px 28px),
+      var(--dark-elev);
+    color: var(--dark-dim);
+  }
+  .dark .ph-label { color: var(--dark-muted); }
+  .dark .ph-dim   { color: var(--dark-dim); }
+
+  /* ============ SECTION HEAD ============ */
+  .section-head { margin-bottom: 64px; max-width: 820px; }
+  .section-head h2 { margin-bottom: 18px; }
+  .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+  .section-head.center .eyebrow { margin-left: auto; margin-right: auto; }
+
+  /* ============ BENCHMARK ============ */
+  #benchmark { background: var(--paper); }
+
+  .bench-callouts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 56px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .bench-callout {
+    padding: 48px;
+    border-right: 1px solid var(--line);
+    background: var(--white);
+  }
+  .bench-callout:last-child { border-right: none; }
+  .bench-callout .b-label {
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 300;
+    color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.16em;
+    margin-bottom: 14px;
+  }
+  .bench-callout h3 { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .bench-callout .versus {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 300;
+    color: var(--ink-4);
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+  .bench-callout .versus strong { color: var(--core-azure); font-weight: 400; }
+  .bench-callout p { font-size: 15.5px; color: var(--ink-3); }
+
+  /* ============ DARK SECTION — RECALL MODES ============ */
+  #modes {
+    background: var(--charcoal);
+    color: var(--dark-text);
+    position: relative; overflow: hidden;
+  }
+  #modes::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--dark-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--dark-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    background-position: center;
+    opacity: 0.35;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    pointer-events: none;
+  }
+  #modes .container { position: relative; }
+  .dark h1, .dark h2, .dark h3 { color: var(--dark-text); }
+  .dark p { color: var(--dark-muted); }
+  .dark .eyebrow { color: var(--dark-muted); }
+  .dark .eyebrow::before { background: var(--core-azure); }
+  .dark .section-divider, .dark.section-divider { border-color: var(--dark-line); }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--dark-line);
+    border-left: 1px solid var(--dark-line);
+  }
+  .mode-card {
+    padding: 44px 36px;
+    border-right: 1px solid var(--dark-line);
+    border-bottom: 1px solid var(--dark-line);
+    background: transparent;
+    transition: background 0.2s;
+  }
+  .mode-card:hover { background: rgba(255,255,255,0.025); }
+  .mode-icon-row {
+    display: flex;
+    color: var(--soft-sky);
+    margin-bottom: 32px;
+  }
+  .mode-latency {
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 32px;
+    color: var(--soft-sky);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .mode-card h3 { font-size: 22px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.015em; }
+  .mode-card p { font-size: 15px; color: var(--dark-muted); }
+
+  /* ============ ARCHITECTURE — TWO LOOPS ============ */
+  .loops {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .loop-card {
+    padding: 56px 48px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+  }
+  .loop-tag {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    color: var(--core-azure);
+    text-transform: uppercase; letter-spacing: 0.16em;
+    margin-bottom: 22px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .loop-tag::before { content: ''; width: 18px; height: 1px; background: var(--core-azure); }
+  .loop-card h3 { font-size: 30px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 14px; }
+  .loop-meta {
+    font-family: var(--mono); font-size: 12px; font-weight: 300;
+    color: var(--ink-4); letter-spacing: 0.06em;
+    margin-bottom: 28px; text-transform: uppercase;
+  }
+  .loop-bullets { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+  .loop-bullets li {
+    display: flex; gap: 14px;
+    font-size: 15px; color: var(--ink-3); line-height: 1.55;
+  }
+  .loop-bullets li::before {
+    content: '◆';
+    color: var(--core-azure);
+    font-size: 10px;
+    line-height: 1.8;
+    flex-shrink: 0;
+  }
+  .loop-example {
+    border-top: 1px solid var(--line);
+    padding-top: 24px;
+  }
+  .loop-example .ex-label {
+    font-family: var(--mono); font-size: 10px; font-weight: 300;
+    color: var(--ink-4); letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .loop-example .ex-quote {
+    font-size: 15.5px; color: var(--ink); margin-bottom: 14px; font-style: italic;
+  }
+  .loop-example .ex-trace {
+    font-family: var(--mono); font-size: 12.5px; font-weight: 300;
+    color: var(--ink-3); line-height: 1.7;
+  }
+  .loop-example .ex-trace .arrow-l { color: var(--core-azure); }
+
+  /* ============ INTEGRATION ============ */
+  #integration { background: var(--paper); }
+  #integration .section-head { text-align: center; margin-left: auto; margin-right: auto; }
+  #integration .section-head .eyebrow { margin-left: auto; margin-right: auto; }
+
+  .code-wrap {
+    max-width: 920px;
+    margin: 0 auto 56px;
+    border: 1px solid var(--line-strong);
+    background: var(--white);
+  }
+  .code-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+    padding: 0 4px;
+  }
+  .code-tab {
+    padding: 14px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 400;
+    color: var(--ink-4);
+    border-bottom: 1.5px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .code-tab .icon { color: var(--ink-5); transition: color 0.15s, transform 0.15s; }
+  .code-tab:hover { color: var(--ink-2); }
+  .code-tab:hover .icon { color: var(--ink-3); transform: translate(1px, -1px); }
+  .code-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+  .code-tab.active .icon { color: var(--ink-3); }
+  .code-tab-spacer { flex: 1; }
+  .code-tab-meta {
+    padding: 14px 18px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-4); font-weight: 300;
+  }
+  .code-body {
+    padding: 28px 0;
+    font-family: var(--mono);
+    font-size: 13px; line-height: 1.85;
+    color: var(--ink);
+    overflow-x: auto;
+    text-align: left;
+    font-weight: 400;
+  }
+  .code-body[hidden] { display: none; }
+  .code-line {
+    display: flex;
+    align-items: baseline;
+    padding: 0 32px;
+    white-space: pre;
+  }
+  .code-line .ln {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    color: var(--ink-5);
+    width: 32px; flex-shrink: 0;
+    user-select: none;
+    text-align: right;
+    padding-right: 16px;
+  }
+  .code-line .sign {
+    width: 14px; flex-shrink: 0;
+    color: var(--ink-4);
+    font-family: var(--mono);
+  }
+  .code-line.add { background: rgba(131, 180, 236, 0.08); }
+  .code-line.add .sign { color: var(--core-azure); }
+  .code-line.del { background: rgba(255, 100, 100, 0.06); }
+  .code-line.del .sign { color: #c8554f; }
+  .code-comment { color: var(--ink-4); }
+  .code-keyword { color: #6f42c1; }
+  .code-string  { color: #1769aa; }
+  .code-fn      { color: #b0540f; }
+  .code-aside {
+    color: var(--ink-4);
+    font-style: italic;
+    margin-left: 8px;
+    font-size: 11.5px;
+  }
+  .code-diff-meta {
+    padding: 12px 32px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11.5px; font-weight: 300;
+    color: var(--ink-4);
+    display: flex; gap: 18px;
+    align-items: center;
+  }
+  .code-diff-meta .add-c { color: var(--core-azure); }
+  .code-diff-meta .del-c { color: #c8554f; }
+
+  .integration-benefits {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    max-width: 920px;
+    margin: 0 auto;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .ib-cell {
+    padding: 36px 32px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+  }
+  .ib-cell h3 { font-size: 18px; margin-bottom: 8px; font-weight: 600; }
+  .ib-cell p { font-size: 14.5px; color: var(--ink-3); }
+
+  /* ============ USE CASES ============ */
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .case-card {
+    padding: 0;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+    display: flex; flex-direction: column;
+  }
+  .case-visual {
+    padding: 32px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--paper);
+  }
+  .case-icon-frame {
+    width: 56px; height: 56px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--core-azure);
+  }
+  .case-icon-frame .icon { width: 24px; height: 24px; }
+  .case-body { padding: 28px 32px 36px; }
+  .case-meta {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    color: var(--ink-4); text-transform: uppercase; letter-spacing: 0.14em;
+    margin-bottom: 14px;
+  }
+  .case-card h3 { font-size: 22px; font-weight: 500; letter-spacing: -0.015em; margin-bottom: 12px; }
+  .case-card p { font-size: 15px; }
+
+  /* featured case */
+  .featured-case {
+    margin-top: 0;
+    border-top: 1px solid var(--line);
+    background: var(--white);
+  }
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 0;
+  }
+  .featured-text {
+    padding: 64px 56px;
+    border-right: 1px solid var(--line);
+  }
+  .featured-eyebrow {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    color: var(--core-azure); text-transform: uppercase;
+    letter-spacing: 0.18em; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .featured-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--core-azure); }
+  .featured-meta {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    color: var(--ink-4); letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .featured-text h3 { font-size: 36px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 24px; line-height: 1.1; }
+  .featured-text p { font-size: 16px; margin-bottom: 18px; }
+  .featured-visual { padding: 48px; }
+
+  /* ============ CALCULATOR ============ */
+  #pricing { background: var(--paper); }
+
+  /* Calculator — Figma auto-layout ready
+     Frame hierarchy:
+     .calc (vertical AL, gap 0, border 1px)
+       ├─ .calc-sliders (horizontal AL, 3 cells, stroke between)
+       │     └─ .slider-cell × 3 (vertical AL, gap 16, padding 28 32)
+       │           ├─ .slider-head (horizontal AL, space-between)
+       │           ├─ .slider-track
+       │           └─ .slider-helper (mono caption)
+       ├─ .calc-stats (horizontal AL, 2 cells, stroke between)
+       │     └─ .calc-stat × 2 (vertical AL, gap 8, padding 28 32)
+       └─ .calc-chart (vertical AL, gap 28, padding 32)
+             ├─ .chart-head (horizontal AL, space-between)
+             └─ .chart-svg-wrap
+  */
+  .calc {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    background: var(--white);
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  /* sliders row */
+  .calc-sliders {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-bottom: 1px solid var(--line);
+  }
+  .slider-cell {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 28px 32px;
+    border-right: 1px solid var(--line);
+  }
+  .slider-cell:last-child { border-right: none; }
+  .slider-head {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .slider-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .slider-value {
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-feature-settings: 'tnum' 1;
+  }
+  .slider-value .unit {
+    font-size: 13px;
+    color: var(--ink-4);
+    margin-left: 4px;
+  }
+
+  /* slider track */
+  .slider-track {
+    position: relative;
+    height: 6px;
+    background: var(--line-soft);
+    width: 100%;
+  }
+  .slider-fill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    background: var(--core-azure);
+  }
+  .slider-thumb {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    background: var(--white);
+    border: 1.5px solid var(--core-azure);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+
+  .slider-helper {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-4);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+
+  /* stats row */
+  .calc-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-bottom: 1px solid var(--line);
+  }
+  .calc-stat {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 32px;
+    border-right: 1px solid var(--line);
+    background: var(--white);
+  }
+  .calc-stat:last-child { border-right: none; }
+  .calc-stat.featured {
+    background: #f3f8fd; /* very subtle ice blue tint */
+  }
+  .calc-stat .stat-pct {
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 13px;
+    color: #2d6cb8; /* muted dark blue */
+    letter-spacing: 0;
+  }
+  .calc-stat.featured .stat-key .dot { background: #2d6cb8; }
+  .calc-stat .stat-sub {
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-4);
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+  }
+  .calc-stat .stat-key {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .calc-stat .stat-key .dot {
+    width: 6px; height: 6px;
+    background: var(--core-azure);
+  }
+  .calc-stat .stat-val {
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 36px;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-feature-settings: 'tnum' 1;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .calc-stat .stat-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-4);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* chart */
+  .calc-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+  }
+  .chart-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .chart-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .chart-legend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ink-3);
+    letter-spacing: 0.02em;
+  }
+  .legend-swatch {
+    width: 14px; height: 2px;
+  }
+  .legend-swatch.naive    { background: #c8554f; }
+  .legend-swatch.recallr  { background: var(--core-azure); }
+
+  .chart-svg-wrap {
+    width: 100%;
+    overflow: hidden;
+  }
+  .chart-svg { width: 100%; height: auto; display: block; }
+  .chart-axis-tick {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    fill: var(--ink-4);
+    letter-spacing: 0.02em;
+  }
+  .chart-grid { stroke: var(--line-soft); stroke-width: 1; }
+  .chart-axis { stroke: var(--line); stroke-width: 1; }
+  .chart-line-naive { stroke: #c8554f; stroke-width: 1.5; fill: none; }
+  .chart-line-recallr { stroke: var(--core-azure); stroke-width: 1.5; fill: none; }
+  .chart-area { fill: rgba(200, 85, 79, 0.05); }
+  .chart-breakeven { stroke: var(--ink-4); stroke-width: 1; stroke-dasharray: 3 4; }
+  .chart-breakeven-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    fill: var(--ink-3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* pricing section head — left aligned */
+  #pricing .section-head { text-align: left; margin-left: 0; margin-right: 0; max-width: 880px; }
+  #pricing .section-head .eyebrow { margin-left: 0; }
+  #pricing .pricing-note {
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink-4);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    margin-top: 18px;
+    max-width: 560px;
+  }
+
+  /* ============ FAQ ============ */
+  #faq .section-head { text-align: center; margin-left: auto; margin-right: auto; }
+  #faq .section-head .eyebrow { margin-left: auto; margin-right: auto; }
+  .faq-list { max-width: 880px; margin: 0 auto; border-top: 1px solid var(--line); }
+  .faq-item { border-bottom: 1px solid var(--line); }
+  .faq-trigger {
+    width: 100%; text-align: left;
+    padding: 28px 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+    font-size: 18px; font-weight: 500; color: var(--ink);
+    letter-spacing: -0.012em; transition: color 0.15s;
+  }
+  .faq-trigger:hover { color: var(--ink-2); }
+  .faq-icon {
+    width: 24px; height: 24px;
+    border: 1px solid var(--line-strong);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink-3); font-size: 15px; line-height: 1;
+    flex-shrink: 0; font-family: var(--mono); font-weight: 300;
+  }
+  .faq-answer {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .faq-answer-inner {
+    padding: 0 4px 28px;
+    font-size: 16px; color: var(--ink-3); line-height: 1.65;
+    max-width: 760px;
+  }
+  .faq-item.open .faq-answer { max-height: 400px; }
+
+  /* ============ CTA BANNER ============ */
+  #cta-banner { padding: 0 0 var(--section-pad); }
+  .cta-wrap { padding: 0 32px; }
+  .cta-inner {
+    max-width: var(--container); margin: 0 auto;
+    padding: 128px 64px;
+    background: linear-gradient(180deg, var(--ice-blue) 0%, var(--soft-sky) 100%);
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta-inner::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(13, 14, 17, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(13, 14, 17, 0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center;
+    mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
+    pointer-events: none;
+  }
+  .cta-inner > * { position: relative; }
+  .cta-inner h2 {
+    max-width: 820px; margin: 0 auto 44px;
+    font-size: 72px; color: var(--ink);
+    letter-spacing: -0.035em; line-height: 0.98;
+  }
+  .cta-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 80px 0 40px;
+    background: var(--white);
+  }
+  .footer-inner {
+    max-width: var(--container); margin: 0 auto; padding: 0 32px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 56px;
+    border-bottom: 1px solid var(--line);
+  }
+  .footer-brand p {
+    font-family: var(--mono); font-size: 12px; font-weight: 300;
+    color: var(--ink-4); margin-top: 16px; letter-spacing: 0.02em;
+  }
+  .footer-col h4 {
+    font-family: var(--mono); font-size: 11px; font-weight: 300;
+    color: var(--ink-4); text-transform: uppercase; letter-spacing: 0.18em;
+    margin-bottom: 20px;
+  }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a {
+    font-size: 14px; color: var(--ink-2); transition: color 0.15s;
+  }
+  .footer-col a:hover { color: var(--core-azure); }
+  .footer-meta {
+    padding-top: 24px;
+    font-family: var(--mono); font-size: 12px; font-weight: 300;
+    color: var(--ink-4); text-align: center; letter-spacing: 0.02em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1024px) {
+    h1 { font-size: 64px; }
+    h2 { font-size: 44px; }
+    .cta-inner h2 { font-size: 56px; }
+    .hero-stat-big .v { font-size: 32px; }
+    .loop-card, .featured-text, .featured-visual { padding: 44px 36px; }
+    .featured-text h3 { font-size: 30px; }
+    :root { --section-pad: 104px; }
+    .bench-callout { padding: 36px; }
+  }
+
+  @media (max-width: 840px) {
+    .nav-links, .nav-cta .signin { display: none; }
+    .nav-toggle {
+      display: inline-flex;
+      width: 38px; height: 38px;
+      border: 1px solid var(--line-strong);
+      align-items: center; justify-content: center;
+    }
+    .nav-toggle span { display: block; width: 14px; height: 1.5px; background: var(--ink); position: relative; }
+    .nav-toggle span::before, .nav-toggle span::after {
+      content: ''; position: absolute; left: 0;
+      width: 14px; height: 1.5px; background: var(--ink);
+    }
+    .nav-toggle span::before { top: -4px; }
+    .nav-toggle span::after { top: 4px; }
+
+    .mode-grid, .case-grid, .integration-benefits { grid-template-columns: 1fr; }
+    .calc-sliders, .calc-stats { flex-direction: column; }
+    .slider-cell, .calc-stat { border-right: none; border-bottom: 1px solid var(--line); }
+    .slider-cell:last-child, .calc-stat:last-child { border-bottom: none; }
+    .hero-stats-big { grid-template-columns: 1fr; }
+    .hero-stat-big { border-right: none; border-bottom: 1px solid var(--line); }
+    .hero-stat-big:last-child { border-bottom: none; }
+    .bench-callouts { grid-template-columns: 1fr; }
+    .bench-callout { border-right: none; border-bottom: 1px solid var(--line); }
+    .bench-callout:last-child { border-bottom: none; }
+    .loops { grid-template-columns: 1fr; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .featured-text { border-right: none; border-bottom: 1px solid var(--line); }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+  }
+
+  @media (max-width: 640px) {
+    :root { --section-pad: 80px; }
+    .container, .nav-inner, .footer-inner, .cta-wrap { padding-left: 20px; padding-right: 20px; }
+    h1 { font-size: 44px; letter-spacing: -0.03em; }
+    h2 { font-size: 32px; }
+    .cta-inner h2 { font-size: 40px; }
+    .lead, p { font-size: 15px; }
+    #hero { padding-top: 64px; }
+    .hero-actions .btn,
+    .cta-actions .btn { flex: 1 1 auto; }
+    .loop-card { padding: 36px 24px; }
+    .featured-text, .featured-visual { padding: 36px 24px; }
+    .featured-text h3 { font-size: 26px; }
+    .bench-callout { padding: 32px 24px; }
+    .bench-callout h3 { font-size: 22px; }
+    .case-body { padding: 22px 24px 32px; }
+    .cta-inner { padding: 72px 24px; }
+    .code-body { font-size: 11.5px; padding: 18px 0; }
+    .code-line { padding: 0 16px; }
+    .code-line .ln { width: 24px; padding-right: 10px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .section-head { margin-bottom: 44px; }
+    .mode-latency { font-size: 26px; }
+    .ib-cell { padding: 28px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ICON SYSTEM (Untitled UI style) ============
+     All icons: 24×24 viewBox, 1.5px stroke, round line caps and joins, currentColor.
+     Rendered consistently across the site via .icon class.
+=============================================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Logo mark -->
+  <symbol id="recallr-mark" viewBox="0 0 40 40">
+    <path d="M 10 6 C 18 14, 22 26, 30 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 30 6 C 22 14, 18 26, 10 34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 6 20 L 34 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="10" cy="6" r="3" fill="currentColor"/>
+    <circle cx="30" cy="6" r="3" fill="currentColor"/>
+    <circle cx="10" cy="34" r="3" fill="currentColor"/>
+    <circle cx="30" cy="34" r="3" fill="currentColor"/>
+    <circle cx="6" cy="20" r="2.5" fill="currentColor"/>
+    <circle cx="34" cy="20" r="2.5" fill="currentColor"/>
+    <circle cx="20" cy="20" r="2" fill="currentColor"/>
+  </symbol>
+
+  <!-- Arrow up-right (Untitled UI: arrow-up-right) -->
+  <symbol id="i-arrow-ur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 17L17 7"/>
+    <path d="M8 7h9v9"/>
+  </symbol>
+
+  <!-- Arrow right (Untitled UI: arrow-right) -->
+  <symbol id="i-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12h14"/>
+    <path d="M13 6l6 6-6 6"/>
+  </symbol>
+
+  <!-- Chevron down -->
+  <symbol id="i-chevron-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 9l6 6 6-6"/>
+  </symbol>
+
+  <!-- Activity (healthcare / heart pulse) -->
+  <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 12h4l2.5-7 5 14 2.5-7H21"/>
+  </symbol>
+
+  <!-- Book open (education / mentor) -->
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v17H5.5A2.5 2.5 0 0 1 3 17.5v-12z"/>
+    <path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v17h5.5a2.5 2.5 0 0 0 2.5-2.5v-12z"/>
+  </symbol>
+
+  <!-- Scale (legal / justice) -->
+  <symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v18"/>
+    <path d="M6 21h12"/>
+    <path d="M4 7h16"/>
+    <path d="M7 7l-3 7a3 3 0 0 0 6 0L7 7z"/>
+    <path d="M17 7l-3 7a3 3 0 0 0 6 0l-3-7z"/>
+  </symbol>
+
+  <!-- Zap (low-latency) -->
+  <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/>
+  </symbol>
+
+  <!-- Layers (architecture) -->
+  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l9 5-9 5-9-5 9-5z"/>
+    <path d="M3 13l9 5 9-5"/>
+    <path d="M3 17l9 5 9-5"/>
+  </symbol>
+
+  <!-- Bar chart (benchmark) -->
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 21h18"/>
+    <path d="M7 17v-6"/>
+    <path d="M12 17V7"/>
+    <path d="M17 17v-9"/>
+  </symbol>
+
+  <!-- Code brackets -->
+  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 6l-6 6 6 6"/>
+    <path d="M16 6l6 6-6 6"/>
+  </symbol>
+
+  <!-- Sparkle / star -->
+  <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/>
+  </symbol>
+
+  <!-- Refresh (sync / loop) -->
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
+    <path d="M21 3v5h-5"/>
+    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+    <path d="M3 21v-5h5"/>
+  </symbol>
+</svg>
+
+<style>
+  /* ============ ICON SYSTEM ============ */
+  .icon { width: 18px; height: 18px; display: inline-block; flex-shrink: 0; vertical-align: middle; }
+  .icon-sm { width: 14px; height: 14px; }
+  .icon-lg { width: 24px; height: 24px; }
+  .icon-xl { width: 28px; height: 28px; }
+</style>
+
+<!-- ============ NAV ============ -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <svg><use href="#recallr-mark"/></svg>
+      <span>Recallr AI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#benchmark">Benchmark</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#integration">Integration</a></li>
+      <li><a href="#usecases">Use Cases</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#">Docs</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn btn-primary btn-sm">Go to Dashboard</button>
+      <button class="nav-toggle" aria-label="Menu"><span></span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<!-- Figma frame: "Section / Hero" — vertical auto-layout, fill container width, padding 96px 32px -->
+<section id="hero">
+  <div class="container">
+    <!-- Figma frame: "Hero / Frame" — vertical auto-layout, gap 48, align left -->
+    <div class="hero-frame">
+      <!-- Figma frame: "Hero / Content" — vertical auto-layout, gap 32, align left, max-width 880 -->
+      <div class="hero-content">
+        <!-- Figma layer: "Eyebrow" -->
+        <span class="eyebrow">Memory Layer for Conversational AI</span>
+        <!-- Figma layer: "H1 / Headline" -->
+        <h1>Your AI finally <span class="dim">remembers.</span></h1>
+        <!-- Figma layer: "Lead / Subhead" -->
+        <p class="lead">Recallr is the #1 memory layer for conversational AI agents. Persistent, versioned and temporally-aware knowledge, powering chatbots, voice agents, and copilots that never forget.</p>
+
+        <!-- Figma frame: "Hero / Stats" — horizontal auto-layout, gap 0, fill-1px-stroke between -->
+        <div class="hero-stats-big">
+          <!-- Figma frame: "Stat / Cell" — vertical auto-layout, gap 10, padding 24 28 -->
+          <div class="hero-stat-big">
+            <div class="v">97.5%</div>
+            <div class="l">Accuracy on LongMemEval</div>
+          </div>
+          <div class="hero-stat-big">
+            <div class="v">+46.6pp</div>
+            <div class="l">Over strongest baseline</div>
+          </div>
+          <div class="hero-stat-big">
+            <div class="v">&lt;400ms</div>
+            <div class="l">Low-latency recall</div>
+          </div>
+        </div>
+
+        <!-- Figma frame: "Hero / Actions" — horizontal auto-layout, gap 10, align left -->
+        <div class="hero-actions">
+          <button class="btn btn-primary">Start Building <svg class="icon icon-sm"><use href="#i-arrow-r"/></svg></button>
+          <button class="btn btn-ghost">View the Benchmark</button>
+        </div>
+      </div>
+
+      <!-- Figma layer: "Scroll Cue" — horizontal auto-layout, gap 8 -->
+      <div class="scroll-cue">scroll to explore <svg class="icon icon-sm"><use href="#i-chevron-d"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENCHMARK ============ -->
+<section id="benchmark">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Benchmark</span>
+      <h2>97.5% accuracy.<br>Best in Class.</h2>
+      <p class="lead" style="margin-top: 24px;">Evaluated on LongMemEval (oracle) across 500 questions spanning six memory task types.</p>
+    </div>
+
+    <div class="ph ph-chart">
+      <span class="ph-label">LongMemEval Benchmark Chart — 6 task types × 6 systems</span>
+      <span class="ph-dim">1160 × 520</span>
+    </div>
+
+    <div class="bench-callouts">
+      <div class="bench-callout">
+        <div class="b-label">Temporal Reasoning Dominance</div>
+        <h3>97.0% vs 50.4% vs 27.1%</h3>
+        <div class="versus"><strong>+46.6pp</strong> improvement over the nearest competitor</div>
+        <p>Recallr knows the difference between when something happened and when you mentioned it. So 'last summer' means last summer, not last Tuesday.</p>
+      </div>
+      <div class="bench-callout">
+        <div class="b-label">Knowledge Update: 97.4%</div>
+        <h3>97.4% vs 76.9% vs 60.3%</h3>
+        <div class="versus">vs <strong>Mem0</strong> 76.9% · vs <strong>Supermemory</strong> 60.3%</div>
+        <p>When facts change, old versions are archived, not erased. Your agent always has the latest truth, and the full history of how it got there.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECALL MODES (DARK) ============ -->
+<section id="modes" class="dark">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Recall Modes</span>
+      <h2>Fast when you need it.<br>Deep when it matters.</h2>
+    </div>
+
+    <div class="ph ph-latency">
+      <span class="ph-label">Latency Distribution — P50 / P95 across all strategies</span>
+      <span class="ph-dim">1160 × 360</span>
+    </div>
+
+    <div class="mode-grid">
+      <div class="mode-card">
+        <div class="mode-icon-row"><svg class="icon icon-lg"><use href="#i-zap"/></svg></div>
+        <div class="mode-latency">&lt;400ms</div>
+        <h3>Low-Latency Recall</h3>
+        <p>Real-time voice and chat — answer before the user finishes thinking.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon-row"><svg class="icon icon-lg"><use href="#i-refresh"/></svg></div>
+        <div class="mode-latency">~1.5s</div>
+        <h3>Balanced Recall</h3>
+        <p>General production workloads — thorough retrieval without perceptible delay.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon-row"><svg class="icon icon-lg"><use href="#i-layers"/></svg></div>
+        <div class="mode-latency">~8s</div>
+        <h3>Agentic Recall</h3>
+        <p>Deep reasoning over months of memory — when completeness matters more than speed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARCHITECTURE — TWO LOOPS ============ -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Architecture</span>
+      <h2>Two loops.<br>Infinite memory.</h2>
+    </div>
+
+    <div class="loops">
+      <div class="loop-card">
+        <div class="loop-tag">Asynchronous Memory Curation</div>
+        <h3>Every conversation leaves a richer graph than it found.</h3>
+        <div class="loop-meta">While you sleep</div>
+        <ul class="loop-bullets">
+          <li>Conversations become structured knowledge, not raw text logs.</li>
+          <li>Contradictions get flagged, not silently overwritten.</li>
+          <li>Facts evolve over time. Every version preserved, none lost.</li>
+        </ul>
+        <div class="loop-example">
+          <div class="ex-label">Example</div>
+          <div class="ex-quote">You: "I moved to Delhi last month."</div>
+          <div class="ex-trace">
+            <span class="arrow-l">→</span> Previous memory updated.<br>
+            "Location: Bengaluru" archived.<br>
+            "Location: Delhi" marked current.<br>
+            Version chain preserved.
+          </div>
+        </div>
+      </div>
+
+      <div class="loop-card">
+        <div class="loop-tag">Synchronous Context Retrieval</div>
+        <h3>The right memory, at the right depth, before the LLM responds.</h3>
+        <div class="loop-meta">Fast → Deep · Auto-Recall</div>
+        <ul class="loop-bullets">
+          <li>Retrieval depth adapts to query complexity, automatically.</li>
+          <li>Graph traversal surfaces connected memories, not just direct matches.</li>
+          <li>Session summaries provide episodic context when facts aren't enough.</li>
+        </ul>
+        <div class="loop-example">
+          <div class="ex-label">Example</div>
+          <div class="ex-quote">You: "What restaurants did I like when I lived in Bengaluru?"</div>
+          <div class="ex-trace">
+            <span class="arrow-l">→</span> Location history traversed.<br>
+            Past preferences recalled across 3 sessions.<br>
+            Response grounded in memory, not hallucination.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTEGRATION ============ -->
+<section id="integration">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow">Integration</span>
+      <h2>Two lines of code.<br>Permanent memory.</h2>
+      <p class="lead" style="margin: 24px auto 0;">A dead-simple, drop-in replacement for your existing agents. Route your OpenAI, Anthropic, or Gemini calls through Recallr. No SDK changes, no architecture rewrites, no new abstractions.</p>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-tabs" role="tablist">
+        <button class="code-tab active" data-tab="openai">
+          <span>OpenAI</span>
+          <svg class="icon icon-sm"><use href="#i-arrow-ur"/></svg>
+        </button>
+        <button class="code-tab" data-tab="anthropic">
+          <span>Anthropic</span>
+          <svg class="icon icon-sm"><use href="#i-arrow-ur"/></svg>
+        </button>
+        <button class="code-tab" data-tab="gemini">
+          <span>Gemini</span>
+          <svg class="icon icon-sm"><use href="#i-arrow-ur"/></svg>
+        </button>
+        <span class="code-tab-spacer"></span>
+      </div>
+
+      <div class="code-body" id="tab-openai">
+<div class="code-line"><span class="ln">1</span><span class="sign"> </span><span><span class="code-keyword">from</span> openai <span class="code-keyword">import</span> OpenAI</span></div>
+<div class="code-line"><span class="ln">2</span><span class="sign"> </span><span> </span></div>
+<div class="code-line"><span class="ln">3</span><span class="sign"> </span><span>client = <span class="code-fn">OpenAI</span>(</span></div>
+<div class="code-line del"><span class="ln">4</span><span class="sign">−</span><span>    base_url=<span class="code-string">"https://api.openai.com/v1"</span>,</span></div>
+<div class="code-line add"><span class="ln">5</span><span class="sign">+</span><span>    base_url=<span class="code-string">'https://api.recallrai.com/api/v1/forward/https://api.openai.com/v1'</span>,<span class="code-aside"># this is all that matters</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="sign"> </span><span>    api_key=<span class="code-string">'sk-...'</span>,</span></div>
+<div class="code-line add"><span class="ln">7</span><span class="sign">+</span><span>    default_headers={</span></div>
+<div class="code-line add"><span class="ln">8</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-API-Key'</span>: <span class="code-string">'rai-...'</span>,</span></div>
+<div class="code-line add"><span class="ln">9</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-Project-Id'</span>: <span class="code-string">'your-project-id'</span>,</span></div>
+<div class="code-line add"><span class="ln">10</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-Allow-New-User-Creation'</span>: <span class="code-string">'true'</span>,</span></div>
+<div class="code-line add"><span class="ln">11</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-Session-Timeout-Seconds'</span>: <span class="code-string">'600'</span>,</span></div>
+<div class="code-line add"><span class="ln">12</span><span class="sign">+</span><span>    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="sign"> </span><span>)</span></div>
+<div class="code-line"><span class="ln">14</span><span class="sign"> </span><span> </span></div>
+<div class="code-line"><span class="ln">15</span><span class="sign"> </span><span><span class="code-comment"># Memory is automatically injected on every call</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="sign"> </span><span>response = client.chat.completions.<span class="code-fn">create</span>(</span></div>
+<div class="code-line"><span class="ln">17</span><span class="sign"> </span><span>    model=<span class="code-string">"gpt-4o-mini"</span>,</span></div>
+<div class="code-line"><span class="ln">18</span><span class="sign"> </span><span>    messages=[{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"My name is Mayank"</span>}],</span></div>
+<div class="code-line add"><span class="ln">19</span><span class="sign">+</span><span>    extra_headers={</span></div>
+<div class="code-line add"><span class="ln">20</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-User-Id'</span>: <span class="code-string">'user-123'</span>,</span></div>
+<div class="code-line add"><span class="ln">21</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-Recall-Strategy'</span>: <span class="code-string">'low_latency'</span>,</span></div>
+<div class="code-line add"><span class="ln">22</span><span class="sign">+</span><span>    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="sign"> </span><span>)</span></div>
+<div class="code-line"><span class="ln">24</span><span class="sign"> </span><span> </span></div>
+<div class="code-line"><span class="ln">25</span><span class="sign"> </span><span><span class="code-fn">print</span>(response.choices[<span class="code-string">0</span>].message.content)</span></div>
+        <div class="code-diff-meta">
+          <span class="add-c">+9 additions</span>
+          <span class="del-c">−3 deletions</span>
+          <span style="margin-left:auto; cursor:pointer;">Copy</span>
+        </div>
+      </div>
+
+      <div class="code-body" id="tab-anthropic" hidden>
+<div class="code-line"><span class="ln">1</span><span class="sign"> </span><span><span class="code-keyword">from</span> anthropic <span class="code-keyword">import</span> Anthropic</span></div>
+<div class="code-line"><span class="ln">2</span><span class="sign"> </span><span> </span></div>
+<div class="code-line"><span class="ln">3</span><span class="sign"> </span><span>client = <span class="code-fn">Anthropic</span>(</span></div>
+<div class="code-line del"><span class="ln">4</span><span class="sign">−</span><span>    base_url=<span class="code-string">"https://api.anthropic.com"</span>,</span></div>
+<div class="code-line add"><span class="ln">5</span><span class="sign">+</span><span>    base_url=<span class="code-string">'https://api.recallrai.com/api/v1/forward/https://api.anthropic.com'</span>,</span></div>
+<div class="code-line"><span class="ln">6</span><span class="sign"> </span><span>    api_key=<span class="code-string">'sk-ant-...'</span>,</span></div>
+<div class="code-line add"><span class="ln">7</span><span class="sign">+</span><span>    default_headers={</span></div>
+<div class="code-line add"><span class="ln">8</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-API-Key'</span>: <span class="code-string">'rai-...'</span>,</span></div>
+<div class="code-line add"><span class="ln">9</span><span class="sign">+</span><span>        <span class="code-string">'X-Recallr-Project-Id'</span>: <span class="code-string">'your-project-id'</span>,</span></div>
+<div class="code-line add"><span class="ln">10</span><span class="sign">+</span><span>    }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="sign"> </span><span>)</span></div>
+      </div>
+
+      <div class="code-body" id="tab-gemini" hidden>
+<div class="code-line"><span class="ln">1</span><span class="sign"> </span><span><span class="code-keyword">from</span> google <span class="code-keyword">import</span> genai</span></div>
+<div class="code-line"><span class="ln">2</span><span class="sign"> </span><span> </span></div>
+<div class="code-line"><span class="ln">3</span><span class="sign"> </span><span>client = genai.<span class="code-fn">Client</span>(</span></div>
+<div class="code-line add"><span class="ln">4</span><span class="sign">+</span><span>    http_options={<span class="code-string">'base_url'</span>: <span class="code-string">'https://api.recallrai.com/api/v1/forward/https://generativelanguage.googleapis.com'</span>},</span></div>
+<div class="code-line"><span class="ln">5</span><span class="sign"> </span><span>    api_key=<span class="code-string">'...'</span>,</span></div>
+<div class="code-line add"><span class="ln">6</span><span class="sign">+</span><span>    default_headers={<span class="code-string">'X-Recallr-API-Key'</span>: <span class="code-string">'rai-...'</span>},</span></div>
+<div class="code-line"><span class="ln">7</span><span class="sign"> </span><span>)</span></div>
+      </div>
+    </div>
+
+    <div class="integration-benefits">
+      <div class="ib-cell">
+        <h3>Zero refactoring</h3>
+        <p>Your existing code works unchanged.</p>
+      </div>
+      <div class="ib-cell">
+        <h3>Any model</h3>
+        <p>OpenAI, Anthropic, Gemini. One proxy.</p>
+      </div>
+      <div class="ib-cell">
+        <h3>Instant memory</h3>
+        <p>Every user gets a persistent profile.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ USE CASES ============ -->
+<section id="usecases" class="section-divider">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Use Cases</span>
+      <h2>Built for conversational AI agents<br>that need to remember everything.</h2>
+      <p class="lead" style="margin-top: 24px;">Every domain where context compounds over time. Every agent that should never ask twice.</p>
+    </div>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <div class="case-visual">
+          <div class="case-icon-frame"><svg class="icon"><use href="#i-activity"/></svg></div>
+        </div>
+        <div class="case-body">
+          <div class="case-meta">Healthcare · Longitudinal</div>
+          <h3>"Clinical Memory"</h3>
+          <p>Remembers medication reactions, contradictory symptoms, and what the patient said last month versus what they're saying now. The doctor gets context. The patient gets heard.</p>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-visual">
+          <div class="case-icon-frame"><svg class="icon"><use href="#i-book"/></svg></div>
+        </div>
+        <div class="case-body">
+          <div class="case-meta">Education · Personalization</div>
+          <h3>"Personalized Mentor"</h3>
+          <p>Knows which concepts clicked, which needed three tries, and how you learn best. Every session builds on the last.</p>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-visual">
+          <div class="case-icon-frame"><svg class="icon"><use href="#i-scale"/></svg></div>
+        </div>
+        <div class="case-body">
+          <div class="case-meta">Legal · Case Management</div>
+          <h3>"Case Memory for Legal AI"</h3>
+          <p>Tracks every witness statement, flags contradictions across depositions months apart, and never loses the thread of a multi-year case. The brief writes itself.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- featured case -->
+    <div class="featured-case">
+      <div class="featured-grid">
+        <div class="featured-text">
+          <div class="featured-eyebrow">Featured Use Case</div>
+          <div class="featured-meta">Chronic Illness · Patient Autonomy</div>
+          <h3>"The AI That Remembers Your Body"</h3>
+          <p>For patients managing chronic conditions, every new doctor visit starts from zero. Recallr gives the AI the full longitudinal picture: symptoms reported six months ago, medications that caused side effects, what "bad days" actually look like for this specific person.</p>
+          <p>When reported symptoms contradict what was said before, the conflict is surfaced, not silently overwritten. The patient's history becomes a living record, not a forgotten intake form.</p>
+        </div>
+        <div class="featured-visual">
+          <div class="ph ph-feat">
+            <span class="ph-label">Patient Memory Visualization — Oct 2024 → Jan 2025 → Mar 2025</span>
+            <span class="ph-dim">Conflict detected at Oct 2024 · Versions diverged</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING / CALCULATOR ============ -->
+<!-- Figma frame: "Section / Pricing" — vertical AL, padding 128 32, fill container -->
+<section id="pricing">
+  <div class="container">
+    <!-- Figma frame: "Section / Head" — vertical AL, gap 18, align left, max-w 880 -->
+    <div class="section-head">
+      <span class="eyebrow">Pricing</span>
+      <h2>See exactly what you save.</h2>
+      <div class="pricing-note">We give $20 to free accounts every month.</div>
+    </div>
+
+    <!-- Figma frame: "Calculator" — vertical AL, gap 0, stroke 1px -->
+    <div class="calc">
+
+      <!-- Figma frame: "Calc / Sliders" — horizontal AL, 3 cells stroke between -->
+      <div class="calc-sliders">
+        <!-- Figma frame: "Slider / Cell" — vertical AL, gap 16, padding 28 32 -->
+        <div class="slider-cell">
+          <div class="slider-head">
+            <span class="slider-label">Chat exchanges / session</span>
+            <span class="slider-value">40</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 66%;"></div>
+            <div class="slider-thumb" style="left: 66%;"></div>
+          </div>
+          <div class="slider-helper">User + assistant pairs per session</div>
+        </div>
+
+        <div class="slider-cell">
+          <div class="slider-head">
+            <span class="slider-label">Sessions / day</span>
+            <span class="slider-value">5</span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 25%;"></div>
+            <div class="slider-thumb" style="left: 25%;"></div>
+          </div>
+          <div class="slider-helper">Per active user, on average</div>
+        </div>
+
+        <div class="slider-cell">
+          <div class="slider-head">
+            <span class="slider-label">Simulation window</span>
+            <span class="slider-value">60<span class="unit">days</span></span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill" style="width: 50%;"></div>
+            <div class="slider-thumb" style="left: 50%;"></div>
+          </div>
+          <div class="slider-helper">Cost projection horizon</div>
+        </div>
+      </div>
+
+      <!-- Figma frame: "Calc / Stats" — horizontal AL, 2 cells, featured highlight -->
+      <div class="calc-stats">
+        <div class="calc-stat">
+          <div class="stat-key">Breakeven</div>
+          <div class="stat-val">Day 17</div>
+          <div class="stat-sub">where naive overtakes recallr</div>
+        </div>
+        <div class="calc-stat featured">
+          <div class="stat-key"><span class="dot"></span>Savings · 60 days</div>
+          <div class="stat-val">$1,560<span class="stat-pct">72% cheaper</span></div>
+          <div class="stat-sub">$2,170 naive · $610 recallr</div>
+        </div>
+      </div>
+
+      <!-- Figma frame: "Calc / Chart" — vertical AL, gap 24, padding 32 -->
+      <div class="calc-chart">
+        <div class="chart-head">
+          <div class="chart-title">Cumulative LLM cost</div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-swatch naive"></span>Naive (full history)</span>
+            <span class="legend-item"><span class="legend-swatch recallr"></span>Recallr</span>
+          </div>
+        </div>
+
+        <div class="chart-svg-wrap">
+          <svg class="chart-svg" viewBox="0 0 1000 380" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- grid lines (y) -->
+            <line class="chart-grid" x1="80" y1="60"  x2="960" y2="60"/>
+            <line class="chart-grid" x1="80" y1="135" x2="960" y2="135"/>
+            <line class="chart-grid" x1="80" y1="210" x2="960" y2="210"/>
+            <line class="chart-grid" x1="80" y1="285" x2="960" y2="285"/>
+            <line class="chart-axis" x1="80" y1="340" x2="960" y2="340"/>
+
+            <!-- y-axis labels -->
+            <text class="chart-axis-tick" x="70" y="64"  text-anchor="end">$2.2k</text>
+            <text class="chart-axis-tick" x="70" y="139" text-anchor="end">$1.7k</text>
+            <text class="chart-axis-tick" x="70" y="214" text-anchor="end">$1.1k</text>
+            <text class="chart-axis-tick" x="70" y="289" text-anchor="end">$550</text>
+            <text class="chart-axis-tick" x="70" y="344" text-anchor="end">$0</text>
+
+            <!-- x-axis labels -->
+            <text class="chart-axis-tick" x="80"  y="360" text-anchor="middle">Day 1</text>
+            <text class="chart-axis-tick" x="256" y="360" text-anchor="middle">Day 13</text>
+            <text class="chart-axis-tick" x="432" y="360" text-anchor="middle">Day 25</text>
+            <text class="chart-axis-tick" x="608" y="360" text-anchor="middle">Day 36</text>
+            <text class="chart-axis-tick" x="784" y="360" text-anchor="middle">Day 48</text>
+            <text class="chart-axis-tick" x="960" y="360" text-anchor="middle">Day 60</text>
+
+            <!-- area between naive and recallr (cost savings) -->
+            <path class="chart-area" d="
+              M 80 340
+              C 200 340, 280 330, 320 322
+              C 500 280, 750 150, 960 40
+              L 960 270
+              L 80 340 Z
+            "/>
+
+            <!-- recallr line (linear) -->
+            <path class="chart-line-recallr" d="M 80 340 L 960 270"/>
+
+            <!-- naive curve (quadratic growth) -->
+            <path class="chart-line-naive" d="
+              M 80 340
+              C 200 340, 280 330, 320 322
+              C 500 280, 750 150, 960 40
+            "/>
+
+            <!-- breakeven marker -->
+            <line class="chart-breakeven" x1="320" y1="60" x2="320" y2="340"/>
+            <text class="chart-breakeven-label" x="328" y="74">Breakeven · Day 17</text>
+
+            <!-- endpoint dots -->
+            <circle cx="960" cy="40"  r="3.5" fill="#c8554f"/>
+            <circle cx="960" cy="270" r="3.5" fill="#83b4ec"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ CTA BANNER ============ -->
+<section id="cta-banner">
+  <div class="cta-wrap">
+    <div class="cta-inner">
+      <h2>Stop building agents<br>that forget.</h2>
+      <div class="cta-actions">
+        <button class="btn btn-primary">Start Building <svg class="icon icon-sm"><use href="#i-arrow-r"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <svg><use href="#recallr-mark"/></svg>
+          <span>Recallr AI</span>
+        </a>
+        <p>© 2026 Recallr AI. All rights reserved.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Developers</h4>
+        <ul>
+          <li><a href="#">Docs</a></li>
+          <li><a href="#">SDKs</a></li>
+          <li><a href="#">API Reference</a></li>
+          <li><a href="#">Integrations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">Twitter / X</a></li>
+          <li><a href="#">Discord</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-meta">Built with love by Claude and Mayank :)</div>
+  </div>
+</footer>
+
+<script>
+  // Code tab switcher
+  document.querySelectorAll('.code-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      document.querySelectorAll('.code-tab').forEach(t => t.classList.toggle('active', t === tab));
+      ['openai','anthropic','gemini'].forEach(id => {
+        document.getElementById('tab-' + id).hidden = (id !== target);
+      });
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const open = item.classList.toggle('open');
+      btn.querySelector('.faq-icon').textContent = open ? '−' : '+';
+    });
+  });
+</script>
+
+</body>
+</html>
